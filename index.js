@@ -226,18 +226,40 @@ function KeyMap ( from, to ) {
 util.inherits(KeyMap, Exclude);
 
 
-var setKey = function (ps, value) {
-
+var setKey = function (ps, value, node) {
+    
     var node = this.value;
+    console.log("Creating:",node);
+    console.log("PS:", ps);
+    var includesArray = false;
     for (var i = 0; i < ps.length - 1; i ++) {
         var key = ps[i];
-        if (!hasOwnProperty.call(node, key)) node[key] = {};
+        //console.log("Node", node);
+        //console.log("NodeShouldBe", this.value);
+        //console.log("Key", key);
+        //console.log("Node[key]",node[key]);
+        if ( node[key] instanceof Array && ps[i+1] == '*') {
+            includesArray = true;
+            console.log("LENGTH:", node[key].length);
+            for ( var j=0; j<node[key].length;j++){
+                ps[i+1] = j;
+                setKey.call(this, ps, value, this.value);
+            }
+        }
+        else if (!hasOwnProperty.call(node, key)) node[key] = {};
         node = node[key];
     }
-    var v = node[ps[i]];
+    console.log("Getting", node[ps[i]]);
+    console.log("NODE",node);
+    if ( !includesArray ) {
+        var v = node[ps[i]];
 
-    delete node[ps[i]];
-    node[value] = v;
+        delete node[ps[i]];
+        if (ps[i] != '*')
+            node[value] = v;
+        
+        console.log("OUTPUT:", node[value]);
+    }
     return value;
 };
 

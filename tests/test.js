@@ -116,10 +116,10 @@ test('Using Filter We should be able to configure complex Objects',
      });
 
 
-test('Using Filter We should be able to configure complex Objects',
+test('Using KeyMap we should be able to replace and objects keys',
      function(t) {
-         var from = ['x','y','z:x','z:y', 'z'];
-         var to = ['a','b','1','2','c'];
+         var from = ['x','y','z:x','z:y', 'z', 'temp:*:b', 'temp'];
+         var to = ['a','b','1','2','c','name','permanent'];
          var data = 
              {
                  x:'hello',
@@ -127,7 +127,11 @@ test('Using Filter We should be able to configure complex Objects',
                  z:{
                      x:'Awesome',
                      y:'Work'
-                 }
+                 },
+                 temp: [
+                     {b:'michael'},
+                     {b:'john'},
+                 ]
 
              }
          var buffer = undefined;
@@ -138,13 +142,19 @@ test('Using Filter We should be able to configure complex Objects',
              
          });
          stream.on('end', function() {
+             console.log("FINAL:", buffer);
              t.same({
                  a:'hello',
                  b:'world',
                  c: {
                      '1':'Awesome',
                      '2':'Work'
-                 }
+                 },
+                 permanent: [
+                     {name:'michael'},
+                     {name:'john'}
+                 ]
+                 
              }, buffer);
 
          });

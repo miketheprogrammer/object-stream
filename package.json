@@ -1,7 +1,7 @@
 {
   "name": "object-stream",
   "description": "A collection a streams for working with objects",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "node": ">=10.0"
   },
