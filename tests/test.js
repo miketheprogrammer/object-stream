@@ -1,5 +1,6 @@
 var test = require('tap').test;
 var ObjectStream = require('../index');
+
 test('SimplePassThroughArray', function( t ) {
     var s = new ObjectStream.PassThrough.Each;
     var data = ['a','b','c','d'];
@@ -15,7 +16,6 @@ test('SimplePassThroughArray', function( t ) {
     s.write(data);
     s.end();
 });
-
 
 test('SimplePassThroughObject', function( t ) {
     var s = new ObjectStream.PassThrough.Each;
