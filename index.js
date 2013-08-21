@@ -188,11 +188,9 @@ function Exclude( config, options ) {
         this.paths.push(keys);
     }
 }
-//util.inherits(Exclude, Stream.Transform);
 
-Exclude.prototype.write = function ( data ) {
-    data = this._transform(data)
-    this.emit('data', data ) ;
+Exclude.prototype.transform = function ( data ) {
+    return this._transform(data);
 }
 
 Exclude.prototype._validate = function ( path, match) {
