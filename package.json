@@ -1,7 +1,7 @@
 {
-  "name": "object-stream",
-  "description": "A collection a streams for working with objects",
-  "version": "0.0.2",
+  "name": "object-transform-stream",
+  "description": "A collection a streams for working with objects and transforming them.",
+  "version": "0.0.3",
   "engines": {
     "node": ">=10.0"
   },

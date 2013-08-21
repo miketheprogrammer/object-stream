@@ -187,23 +187,25 @@ function Filter( config, options ) {
     this._config = config;
 
     Exclude.call(this, config);   
+    this.paths = [];
+    for ( var index in this._config ) {
+        var key = this._config[index];
+        var keys = key.split(':');
+        var ref = this;
+        this.paths.push(keys);
+    }    
+
 }
 util.inherits(Filter, Exclude);
 
 Filter.prototype._transform = function ( data ) {
     var d_t = traverse(data);
-    var paths = [];
-    for ( var index in this._config ) {
-        var key = this._config[index];
-        var keys = key.split(':');
-        var ref = this;
-        paths.push(keys);
-    }    
+    var ref = this;
     d_t.forEach( function (v) {
         var doDelete = false;
         
-        for ( var index in paths ) {
-            doDelete = doDelete || ref.validate( paths[index], this.path ) 
+        for ( var index in ref.paths ) {
+            doDelete = doDelete || ref.validate( ref.paths[index], this.path ) 
         }
         if ( !doDelete ) {
             if ( this.path.length != 0){
@@ -221,6 +223,15 @@ function KeyMap ( from, to ) {
     this._from = from;
     this._to = to;
     Exclude.call(this);
+
+
+    this.paths = {from:[], to:[]};
+    for ( var index in this._from ) {
+        var key = this._from[index];
+        var keys = key.split(':');
+        this.paths.from.push(keys);
+    }
+    this.paths.to = this._to;
 }
 
 util.inherits(KeyMap, Exclude);
@@ -229,18 +240,11 @@ util.inherits(KeyMap, Exclude);
 var setKey = function (ps, value, node) {
     
     var node = this.value;
-    console.log("Creating:",node);
-    console.log("PS:", ps);
     var includesArray = false;
     for (var i = 0; i < ps.length - 1; i ++) {
         var key = ps[i];
-        //console.log("Node", node);
-        //console.log("NodeShouldBe", this.value);
-        //console.log("Key", key);
-        //console.log("Node[key]",node[key]);
         if ( node[key] instanceof Array && ps[i+1] == '*') {
             includesArray = true;
-            console.log("LENGTH:", node[key].length);
             for ( var j=0; j<node[key].length;j++){
                 ps[i+1] = j;
                 setKey.call(this, ps, value, this.value);
@@ -249,37 +253,26 @@ var setKey = function (ps, value, node) {
         else if (!hasOwnProperty.call(node, key)) node[key] = {};
         node = node[key];
     }
-    console.log("Getting", node[ps[i]]);
-    console.log("NODE",node);
     if ( !includesArray ) {
         var v = node[ps[i]];
 
         delete node[ps[i]];
         if (ps[i] != '*')
             node[value] = v;
-        
-        console.log("OUTPUT:", node[value]);
     }
     return value;
 };
 
 
 KeyMap.prototype._transform = function( data ) {
+    
     var d_t = traverse(data);
-    var paths = {from:[], to:[]};
-    for ( var index in this._from ) {
-        var key = this._from[index];
-        var keys = key.split(':');
-        paths.from.push(keys);
-    }
-    paths.to = this._to;
-    //console.log(paths);
 
-    for ( var index in paths.from ) {
-        var from = paths.from[index];
-        var to = paths.to[index];
+    for ( var index in this.paths.from ) {
+        var from = this.paths.from[index];
+        var to = this.paths.to[index];
         
-        setKey.call(d_t,from, to);
+        setKey.call(d_t, from, to);
 
     }
     return d_t.value;
@@ -287,7 +280,6 @@ KeyMap.prototype._transform = function( data ) {
 
 function get(cls, first, second) {
     var ins = new cls(first, second);
-    console.dir(ins);
     var s = through( function write( data) {
         this.emit('data', this.bind._transform(data) );
     }, false, ins);
