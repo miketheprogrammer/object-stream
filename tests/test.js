@@ -221,3 +221,41 @@ test('Together the streams should be pipeable and work',
 
      });
 
+test('Using Mutate we should be able to move key value pairs around',
+     function(t) {
+         var from = ['menu:sections'];
+         var to = ['sections'];
+         var data = 
+             {
+                 menu: {
+                     details: "blah",
+                     sections: [
+                         {_id:1},
+                         {_id:2}
+                     ]
+                 },
+             }
+         var buffer = undefined;
+         var stream = ObjectStream.Transform.Mutate(from,to);
+
+         stream.on('data', function ( data ) {
+             buffer = data;
+             
+         });
+         stream.on('end', function() {
+             console.log("FINAL:", buffer);
+             t.same({
+                 menu: {
+                     details:"blah"
+                 },
+                 sections: [
+                         {_id:1},
+                         {_id:2}
+                     ]
+             }, buffer);
+
+         });
+         stream.write(data);
+         stream.end();
+         t.end();
+     });

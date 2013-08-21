@@ -21,13 +21,53 @@ PassThroughFilter.prototype.write = function( data ) {
 
 var Stream = require('stream')
 
+/*
+Through
+Copyright (c) 2011 Dominic Tarr
+Modified by Michael Hernandez @ 2013
+Through was distributed with MIT and APACHE Licenses.
+This module only applies the MIT License.
+
+The below implementation of Through is a Derivative Work.
+It has been modified to suit the needs of the Software.
+
+Included here is an inline copy of the original MIT License:
+
+The MIT License
+
+Copyright (c) 2011 Dominic Tarr
+
+Permission is hereby granted, free of charge, 
+to any person obtaining a copy of this software and 
+associated documentation files (the "Software"), to 
+deal in the Software without restriction, including 
+without limitation the rights to use, copy, modify, 
+merge, publish, distribute, sublicense, and/or sell 
+copies of the Software, and to permit persons to whom 
+the Software is furnished to do so, 
+subject to the following conditions:
+
+The above copyright notice and this permission notice 
+shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR 
+ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+///END OF LICENSE\\\
+*/
 // through
 //
 // a stream that does nothing but re-emit the input.
 // useful for aggregating a series of changing but not ending streams into one stream)
 
-exports = module.exports = through
-through.through = through
+//exports = module.exports = through
+//through.through = through
 
 //create a readable writable stream.
 
@@ -275,10 +315,58 @@ KeyMap.prototype._transform = function( data ) {
     for ( var index in this.paths.from ) {
         var from = this.paths.from[index];
         var to = this.paths.to[index];
+
         
         setKey.call(d_t, from, to);
 
     }
+    return d_t.value;
+}
+
+/*
+  Only works on Any sub object to any depth.
+  Does not work in arrays on objects.  
+*/
+function Mutate ( from, to ) {
+
+    this._from = from;
+    this._to = to;
+    Exclude.call(this);
+
+
+    this.paths = {from:[], to:[]};
+    for ( var index in this._from ) {
+        var key = this._from[index];
+        var keys = key.split(':');
+        this.paths.from.push(keys);
+    }
+    this.paths.to = this._to;
+}
+
+util.inherits(Mutate, Exclude);
+
+
+Mutate.prototype._transform = function( data ) {
+    
+    var d_t = traverse(data);
+
+    for ( var index in this.paths.from ) {
+        var from = this.paths.from[index];
+        var to = this.paths.to[index];
+
+        if ( !( to instanceof Array ) ) 
+            to = [to];
+        
+        d_t.set(to, d_t.get(from));
+
+        var ref = this;
+        d_t.forEach(function(v) {
+            if ( ref.validate(from, this.path) ) 
+                this.delete()
+        });
+    }
+    var ref = this;
+    
     return d_t.value;
 }
 
@@ -302,4 +390,7 @@ exports.Transform.Filter = function(first, second) {
 }
 exports.Transform.KeyMap = function(first, second) {
     return get(KeyMap, first, second);
+}
+exports.Transform.Mutate = function(first, second) {
+    return get(Mutate, first, second);
 }
