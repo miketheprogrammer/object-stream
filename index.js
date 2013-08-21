@@ -141,6 +141,12 @@ function through (write, end, bind, opts) {
 function Exclude( config, options ) {
     this._config = config;
 
+    this.paths = [];
+    for ( var index in this._config ) {
+        var key = this._config[index];
+        var keys = key.split(':');
+        this.paths.push(keys);
+    }
 }
 //util.inherits(Exclude, Stream.Transform);
 
@@ -166,19 +172,17 @@ Exclude.prototype.validate = function ( path, match ) {
 
 Exclude.prototype._transform = function ( data ) {    
     var d_t = traverse(data);
-    for ( var index in this._config ) {
-        var key = this._config[index];
-        var keys = key.split(':');
-        var ref = this;
+    
+    var ref = this;
+    for ( var index in this.paths ) {
         d_t.forEach( function (v) {
-            if ( ref.validate( keys, this.path ) ){
+            if ( ref.validate( ref.paths[index], this.path ) ){
                 try {
                     this.delete();
                 } catch ( err ) {
                 }
             }
         });
-
     }
     return d_t.value;
 }
