@@ -307,7 +307,6 @@ var setKey = function (ps, value, node) {
     return value;
 };
 
-
 KeyMap.prototype._transform = function( data ) {
     
     var d_t = traverse(data);
@@ -353,7 +352,7 @@ Mutate.prototype._transform = function( data ) {
     for ( var index in this.paths.from ) {
         var from = this.paths.from[index];
         var to = this.paths.to[index];
-
+            
         if ( !( to instanceof Array ) ) 
             to = [to];
         
@@ -382,8 +381,21 @@ exports.PassThrough = {};
 exports.through = through;
 exports.Transform = {};
 exports.PassThrough.Each = PassThroughFilter;
+
+/*
+ Raw returns the raw object rather than an instance of stream with the object binded to it.
+*/
+exports.raw = {};
+exports.raw.Exclude = Exclude;
+exports.raw.Filter = Filter;
+exports.raw.KeyMap = KeyMap;
+exports.raw.Mutate = Mutate;
+
+/*
+  The Following return a stream with the instance of the Object binded to it.
+*/
 exports.Transform.Exclude = function(first, second){
-    return get(Exclude, first, second)
+    return get(Exclude, first, second);
 }
 exports.Transform.Filter = function(first, second) {
     return get(Filter, first, second);
