@@ -168,9 +168,9 @@ test('Using KeyMap we should be able to replace and objects keys',
 test('Together the streams should be pipeable and work',
      function(t) {
          var exclude_config = ['x'];
-         var filter_config = ['z','z:*'];
-         var from = ['z:x','z:y', 'z'];
-         var to = ['1','2','c'];
+         var filter_config = ['z','z:*', 'mutate', 'mutate:*','mutate:*:*'];
+         var from = ['z:x','z:y', 'z','mutate:*:_rev'];
+         var to = ['1','2','c', '_id'];
 
 
          var data = 
@@ -180,7 +180,11 @@ test('Together the streams should be pipeable and work',
                  z:{
                      x:'Awesome',
                      y:'Work'
-                 }
+                 },
+                 mutate: [
+                     {_rev:'1'},
+                     {_rev:'2'}
+                 ]
 
              }
          var buffer = undefined;
@@ -198,7 +202,11 @@ test('Together the streams should be pipeable and work',
                  c: {
                      '1':'Awesome',
                      '2':'Work'
-                 }
+                 },
+                 mutate: [
+                     {_id:'1'},
+                     {_id:'2'}
+                 ]
              }, buffer);
              
              t.end();
