@@ -283,7 +283,17 @@ Filter.prototype._transform = function ( data ) {
 }
 
 function KeyMap ( from, to ) {
-
+    
+    if ( to == undefined ) {
+        to = [];
+        var _from = [];
+        for ( var key in from ) {
+            _from.push(key);
+            to.push(from[key]);
+        }
+        from = _from;
+    }
+    
     this._from = from;
     this._to = to;
     Exclude.call(this);
@@ -395,6 +405,17 @@ Mutate.prototype._transform = function( data ) {
 }
 
 function Setter ( paths, values ) {
+
+    if ( values == undefined ) {
+        values = [];
+        var _paths = [];
+        for ( var key in paths ) {
+            _paths.push(key);
+            values.push(paths[key]);
+        }
+        paths = _paths;
+    }
+
 
     this._paths = paths;
     this._values = values;

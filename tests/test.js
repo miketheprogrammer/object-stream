@@ -378,3 +378,76 @@ test('Using Setter we should be able to build an object',
          stream.end();
          t.end();
      });
+
+
+test('We should be able to use keymap with an object mapping',
+     function(t) {
+         var mapping = {
+             'x':'a',
+             'y':'b'
+         }
+         var data = 
+             {
+                 x:1,
+                 y:2
+             }
+         var buffer = undefined;
+         var stream = ObjectStream.Transform.KeyMap(mapping);
+
+         stream.on('data', function ( data ) {
+             buffer = data;
+             
+         });
+         stream.on('end', function() {
+             console.log("FINAL:", buffer);
+             t.same({
+                 a:1,
+                 b:2
+             }, buffer);
+
+         });
+         stream.write(data);
+         stream.end();
+         t.end();
+
+     });
+
+test('We should be able to use setter with an object mapping',
+     function(t) {
+         var mapping = {
+             'id': 1,
+             'obj': {},
+             'obj.id': 1,
+             'obj.subobj':{},
+             'obj.subobj.array':[1,2,3,4]
+         }
+         var data = {};
+         var buffer = undefined;
+         var stream = ObjectStream.Transform.Setter(mapping);
+
+         stream.on('data', function ( data ) {
+             buffer = data;
+             
+         });
+         stream.on('end', function() {
+             console.log("FINAL:", buffer);
+             t.same({
+                 id:1,
+                 obj: {
+                     id:1,
+                     subobj:{
+                         array:[
+                             1,
+                             2,
+                             3,
+                             4
+                         ]
+                     }
+                 }
+             }, buffer);
+
+         });
+         stream.write(data);
+         stream.end();
+         t.end();
+     });
