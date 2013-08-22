@@ -307,6 +307,8 @@ var setKey = function (ps, value, node) {
     var includesArray = false;
     for (var i = 0; i < ps.length - 1; i ++) {
         var key = ps[i];
+        
+        try {
         if ( node[key] instanceof Array && ps[i+1] == '*') {
             includesArray = true;
             for ( var j=0; j<node[key].length;j++){
@@ -314,21 +316,24 @@ var setKey = function (ps, value, node) {
                 setKey.call(this, ps, value, this.value);
             }
         }
-        else if (!hasOwnProperty.call(node, key)) node[key] = {};
+        //else if (!hasOwnProperty.call(node, key)) node[key] = {};
         node = node[key];
+        } catch ( e) {console.log(e)}
     }
+    try {
     if ( !includesArray ) {
+        
         var v = node[ps[i]];
-
-        delete node[ps[i]];
+        
         if (ps[i] != '*')
+            delete node[ps[i]];
             node[value] = v;
     }
+    } catch ( e ) {console.log(e)}
     return value;
 };
 
 KeyMap.prototype._transform = function( data ) {
-    
     var d_t = traverse(data);
 
     for ( var index in this.paths.from ) {

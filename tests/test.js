@@ -271,18 +271,22 @@ test("Using the following schema we should be able to Filter, Exclude, and Repla
         'desc',
         'entries',
         'entries.*',
-        'entries.*.*'
+        'entries.*.*',
+        'attributes',
     ]
     var from = [
         'title',
         'desc',
-        'entries.*.desc'
+        'entries.*.desc',
+        'attributes.*.id'
     ]
     var to = [
         '_title',
         '_description',
-        '_description'
+        '_description',
+        '_id',
     ]
+    
     
     var exclude = ObjectStream.Transform.Exclude(exclude_config);
     var filter = ObjectStream.Transform.Filter(filter_config);
@@ -303,8 +307,12 @@ test("Using the following schema we should be able to Filter, Exclude, and Repla
                 name: 'section1',
                 desc:'blah',
             }
-        ]
+        ],
+        attributes: {
+            'x':1
+        }
     }
+    console.log("Original Data", data);
 
     exclude.pipe(filter).pipe(keymap);
 
@@ -327,8 +335,8 @@ test("Using the following schema we should be able to Filter, Exclude, and Repla
                 name: 'section1',
                 _description:'blah',
             }
-        ]
-
+        ], 
+            attributes:{}
         });
     });
 
