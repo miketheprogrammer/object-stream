@@ -259,13 +259,39 @@ test('Using Mutate we should be able to move key value pairs around',
          stream.end();
          t.end();
      });
-/*
+
 test("Using the following schema we should be able to Filter, Exclude, and Replace Keys", function( t ) {
+    var exclude_config = [
+        'attrbutionImage',
+        'attributionImageLink',
+        'entries.*.id'
+    ]
+    var filter_config = [
+        'title',
+        'desc',
+        'entries',
+        'entries.*',
+        'entries.*.*'
+    ]
+    var from = [
+        'title',
+        'desc',
+        'entries.*.desc'
+    ]
+    var to = [
+        '_title',
+        '_description',
+        '_description'
+    ]
+    
+    var exclude = ObjectStream.Transform.Exclude(exclude_config);
+    var filter = ObjectStream.Transform.Filter(filter_config);
+    var keymap = ObjectStream.Transform.KeyMap(from,to);
     
     var data = {
         title: 'Michaels Palace of Food',
         desc: 'Awesomeness',
-        footnode: 'Retribution will come',
+        footnote: 'Retribution will come',
         attributionImage: '/images/attr.jpg',
         attributionImageLink: 'www.google.com',
         entries: [
@@ -279,7 +305,33 @@ test("Using the following schema we should be able to Filter, Exclude, and Repla
             }
         ]
     }
-    t.end();
-});
 
-*/
+    exclude.pipe(filter).pipe(keymap);
+
+    var buffer= undefined;
+    t.plan(1);
+    exclude.on('data', function ( data ) {
+        buffer = data;
+    });
+
+    exclude.on('end', function() {
+        console.dir(buffer);
+        t.same(buffer, {
+        _title: 'Michaels Palace of Food',
+        _description: 'Awesomeness',
+        entries: [
+            {
+                type: 'section',
+                orderNum: 1,
+                title: 'section1',
+                name: 'section1',
+                _description:'blah',
+            }
+        ]
+
+        });
+    });
+
+    exclude.write(data);
+    exclude.end();
+});
