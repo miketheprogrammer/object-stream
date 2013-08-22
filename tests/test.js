@@ -343,3 +343,38 @@ test("Using the following schema we should be able to Filter, Exclude, and Repla
     exclude.write(data);
     exclude.end();
 });
+
+test('Using Setter we should be able to build an object',
+     function(t) {
+         var paths = ['id', 'obj', 'obj.id', 'obj.subobj', 'obj.subobj.array'];
+         var values = [1, {}, 1, {}, [1,2,3,4]];
+         var data = {};
+         var buffer = undefined;
+         var stream = ObjectStream.Transform.Setter(paths, values);
+
+         stream.on('data', function ( data ) {
+             buffer = data;
+             
+         });
+         stream.on('end', function() {
+             console.log("FINAL:", buffer);
+             t.same({
+                 id:1,
+                 obj: {
+                     id:1,
+                     subobj:{
+                         array:[
+                             1,
+                             2,
+                             3,
+                             4
+                         ]
+                     }
+                 }
+             }, buffer);
+
+         });
+         stream.write(data);
+         stream.end();
+         t.end();
+     });

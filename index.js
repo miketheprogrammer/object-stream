@@ -394,6 +394,42 @@ Mutate.prototype._transform = function( data ) {
     return d_t.value;
 }
 
+function Setter ( paths, values ) {
+
+    this._paths = paths;
+    this._values = values;
+    Exclude.call(this);
+
+
+    this.paths = {paths:[], values:[]};
+    for ( var index in this._paths ) {
+        var key = this._paths[index];
+        var keys = key.split('.');
+        this.paths.paths.push(keys);
+    }
+    this.paths.values = this._values;
+}
+
+util.inherits(Setter, Exclude);
+
+
+Setter.prototype._transform = function( data ) {
+    var d_t = traverse(data);
+
+    for ( var index in this.paths.paths ) {
+        var path = this.paths.paths[index];
+        var value = this.paths.values[index];
+        if ( ! ( path instanceof Array ) )
+             path = [path];
+        d_t.set(path, value);
+
+    }
+    return d_t.value;
+}
+
+
+
+
 function get(cls, first, second) {
     var ins = new cls(first, second);
     var s = through( function write( data) {
@@ -401,6 +437,8 @@ function get(cls, first, second) {
     }, false, ins);
     return s;
 }
+
+
 
 exports.PassThrough = {};
 exports.through = through;
@@ -415,7 +453,7 @@ exports.raw.Exclude = Exclude;
 exports.raw.Filter = Filter;
 exports.raw.KeyMap = KeyMap;
 exports.raw.Mutate = Mutate;
-
+exports.raw.Setter = Setter;
 /*
   The Following return a stream with the instance of the Object binded to it.
 */
@@ -430,4 +468,7 @@ exports.Transform.KeyMap = function(first, second) {
 }
 exports.Transform.Mutate = function(first, second) {
     return get(Mutate, first, second);
+}
+exports.Transform.Setter = function(first, second) {
+    return get(Setter, first, second);
 }
