@@ -31,7 +31,8 @@ This module only applies the MIT License.
 The below implementation of Through is a Derivative Work.
 It has been modified to suit the needs of the Software.
 
-Included here is an inline copy of the original MIT License:
+Included here is an inline copy of the original MIT License as well as
+the Apache2 License:
 
 The MIT License
 
@@ -60,6 +61,25 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 ///END OF LICENSE\\\
+
+Apache License, Version 2.0
+
+Copyright (c) 2011 Dominic Tarr
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+//END OF LICENSE\\\\
+
 */
 // through
 //
@@ -184,9 +204,11 @@ function Exclude( config, options ) {
     this.paths = [];
     for ( var index in this._config ) {
         var key = this._config[index];
-        var keys = key.split(':');
+        var keys = key.split('.');
         this.paths.push(keys);
+        
     }
+    console.log("PATHS", this.paths);
 }
 
 Exclude.prototype.transform = function ( data ) {
@@ -232,7 +254,7 @@ function Filter( config, options ) {
     this.paths = [];
     for ( var index in this._config ) {
         var key = this._config[index];
-        var keys = key.split(':');
+        var keys = key.split('.');
         var ref = this;
         this.paths.push(keys);
     }    
@@ -270,7 +292,7 @@ function KeyMap ( from, to ) {
     this.paths = {from:[], to:[]};
     for ( var index in this._from ) {
         var key = this._from[index];
-        var keys = key.split(':');
+        var keys = key.split('.');
         this.paths.from.push(keys);
     }
     this.paths.to = this._to;
@@ -334,7 +356,7 @@ function Mutate ( from, to ) {
     this.paths = {from:[], to:[]};
     for ( var index in this._from ) {
         var key = this._from[index];
-        var keys = key.split(':');
+        var keys = key.split('.');
         this.paths.from.push(keys);
     }
     this.paths.to = this._to;

@@ -36,7 +36,7 @@ test('SimplePassThroughObject', function( t ) {
 
 test('Using Exclude We should be able to configure complex Objects',
      function(t) {
-         var config = ['x:y:*', 'y:b'];
+         var config = ['x.y.*', 'y.b'];
          var data = 
              {
                  x:{
@@ -75,7 +75,7 @@ test('Using Exclude We should be able to configure complex Objects',
 
 test('Using Filter We should be able to configure complex Objects',
      function(t) {
-         var config = ['x','x:y','x:y:*', 'y', 'y:b', 'y:b:*'];
+         var config = ['x','x.y','x.y.*', 'y', 'y.b', 'y.b.*'];
          var data = 
              {
                  x:{
@@ -118,7 +118,7 @@ test('Using Filter We should be able to configure complex Objects',
 
 test('Using KeyMap we should be able to replace and objects keys',
      function(t) {
-         var from = ['x','y','z:x','z:y', 'z', 'temp:*:b', 'temp'];
+         var from = ['x','y','z.x','z.y', 'z', 'temp.*.b', 'temp'];
          var to = ['a','b','1','2','c','name','permanent'];
          var data = 
              {
@@ -168,8 +168,8 @@ test('Using KeyMap we should be able to replace and objects keys',
 test('Together the streams should be pipeable and work',
      function(t) {
          var exclude_config = ['x'];
-         var filter_config = ['z','z:*', 'mutate', 'mutate:*','mutate:*:*'];
-         var from = ['z:x','z:y', 'z','mutate:*:_rev'];
+         var filter_config = ['z','z.*', 'mutate', 'mutate.*','mutate.*.*'];
+         var from = ['z.x','z.y', 'z','mutate.*._rev'];
          var to = ['1','2','c', '_id'];
 
 
@@ -223,7 +223,7 @@ test('Together the streams should be pipeable and work',
 
 test('Using Mutate we should be able to move key value pairs around',
      function(t) {
-         var from = ['menu:sections'];
+         var from = ['menu.sections'];
          var to = ['sections'];
          var data = 
              {
@@ -259,3 +259,27 @@ test('Using Mutate we should be able to move key value pairs around',
          stream.end();
          t.end();
      });
+/*
+test("Using the following schema we should be able to Filter, Exclude, and Replace Keys", function( t ) {
+    
+    var data = {
+        title: 'Michaels Palace of Food',
+        desc: 'Awesomeness',
+        footnode: 'Retribution will come',
+        attributionImage: '/images/attr.jpg',
+        attributionImageLink: 'www.google.com',
+        entries: [
+            {
+                id: 1,
+                type: 'section',
+                orderNum: 1,
+                title: 'section1',
+                name: 'section1',
+                desc:'blah',
+            }
+        ]
+    }
+    t.end();
+});
+
+*/
