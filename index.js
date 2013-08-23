@@ -206,9 +206,7 @@ function Exclude( config, options ) {
         var key = this._config[index];
         var keys = key.split('.');
         this.paths.push(keys);
-        
     }
-    console.log("PATHS", this.paths);
 }
 
 Exclude.prototype.transform = function ( data ) {
@@ -328,7 +326,7 @@ var setKey = function (ps, value, node) {
         }
         //else if (!hasOwnProperty.call(node, key)) node[key] = {};
         node = node[key];
-        } catch ( e) {console.log(e)}
+        } catch ( e) {}
     }
     try {
     if ( !includesArray ) {
@@ -339,7 +337,7 @@ var setKey = function (ps, value, node) {
             delete node[ps[i]];
             node[value] = v;
     }
-    } catch ( e ) {console.log(e)}
+    } catch ( e ) {}
     return value;
 };
 
