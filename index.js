@@ -362,6 +362,15 @@ KeyMap.prototype._transform = function( data ) {
   Does not work in arrays on objects.  
 */
 function Mutate ( from, to ) {
+    if ( to == undefined ) {
+        to = [];
+        var _from = [];
+        for ( var key in from ) {
+            _from.push(key);
+            to.push(from[key]);
+        }
+        from = _from;
+    }
 
     this._from = from;
     this._to = to;

@@ -451,3 +451,41 @@ test('We should be able to use setter with an object mapping',
          stream.end();
          t.end();
      });
+
+test('We should be able to use mutate with an object mapping',
+     function(t) {
+         var mapping = { 'menu.sections':'sections' }
+         var data = 
+             {
+                 menu: {
+                     details: "blah",
+                     sections: [
+                         {_id:1},
+                         {_id:2}
+                     ]
+                 },
+             }
+         var buffer = undefined;
+         var stream = ObjectStream.Transform.Mutate(mapping);
+
+         stream.on('data', function ( data ) {
+             buffer = data;
+             
+         });
+         stream.on('end', function() {
+             console.log("FINAL:", buffer);
+             t.same({
+                 menu: {
+                     details:"blah"
+                 },
+                 sections: [
+                         {_id:1},
+                         {_id:2}
+                     ]
+             }, buffer);
+
+         });
+         stream.write(data);
+         stream.end();
+         t.end();
+     });
